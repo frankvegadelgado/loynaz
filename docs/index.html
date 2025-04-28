@@ -1,0 +1,388 @@
+<html>
+  <head>
+    <title>LOYNAZ</title>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+      code:not(.language-diff) {
+        background-color: white;
+        color: black;
+        display: inline-block;
+      }
+      code.language-diff {
+        background-color: while;
+        color: green;
+      }
+    </style>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js"],
+        "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], displayMath: [ ["$$","$$"], ["\\[", "\\]"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno" },
+        TeX: { noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } } },
+        messageStyle: "none"
+      });
+    </script>
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js"
+    ></script>
+  </head>
+  <body>
+    <h1>Loynaz: Approximate Edge Dominating Set Solver</h1>
+    <p>
+      <img
+        src="loynaz.jpg"
+        alt="Honoring the Memory of Dulce Maria Loynaz (A renowned Cuban poet and key figure in Cuban literature, she won the Miguel de Cervantes Prize.)"
+      />
+    </p>
+    <p>
+      This work builds upon
+      <a
+        href="https://dev.to/frank_vega_987689489099bf/efficient-edge-dominating-set-approximation-for-sparse-graphs-56d7"
+        >Efficient Edge Dominating Set Approximation for Sparse Graphs</a
+      >.
+    </p>
+    <hr />
+    <h1>Edge Dominating Set Problem - Overview</h1>
+    <h2>Definition</h2>
+    <p>
+      The <strong>Edge Dominating Set (EDS)</strong> problem is a classical
+      problem in graph theory and combinatorial optimization. Given an
+      undirected graph $G = (V, E)$, an edge dominating set is a subset $D
+      \subseteq E$ such that every edge not in $D$ is adjacent to at least one
+      edge in $D$.
+    </p>
+    <h3>Formal Definition:</h3>
+    <p>
+      A set $D \subseteq E$ is an <strong>edge dominating set</strong> if for
+      every edge $e \in E \setminus D$, there exists an edge $d \in D$ such that
+      $e$ and $d$ share a common vertex.
+    </p>
+    <h2>Objective</h2>
+    <p>
+      Find an edge dominating set $D$ of
+      <strong>minimum cardinality</strong> (smallest possible size).
+    </p>
+    <h2>Computational Complexity</h2>
+    <ul>
+      <li>
+        <strong>NP-Hard</strong>: The decision version of EDS (&quot;Does a
+        graph $G$ have an edge dominating set of size $k$?&quot;) is
+        NP-complete.
+      </li>
+      <li>
+        <strong>Approximation</strong>: There exists a 2-approximation algorithm
+        for EDS (i.e., a solution at most twice the optimal size).
+      </li>
+      <li>
+        <strong>Exact Solutions</strong>: Solvable in exponential time via
+        brute-force or more efficient algorithms like branch-and-bound.
+      </li>
+    </ul>
+    <h2>Applications</h2>
+    <ul>
+      <li>Network design and fault tolerance.</li>
+      <li>Wireless sensor networks (efficient coverage).</li>
+      <li>Scheduling and resource allocation problems.</li>
+    </ul>
+    <h2>Variants</h2>
+    <ul>
+      <li>
+        <strong>Weighted Edge Dominating Set</strong>: Edges have weights, and
+        the goal is to minimize the total weight of $D$.
+      </li>
+      <li>
+        <strong>Connected Edge Dominating Set</strong>: Requires $D$ to induce a
+        connected subgraph.
+      </li>
+      <li>
+        <strong>Efficient Edge Dominating Set</strong>: Imposes additional
+        constraints on the structure of $D$.
+      </li>
+    </ul>
+    <h2>Related Problems</h2>
+    <ul>
+      <li>
+        <strong>Vertex Cover</strong>: A vertex cover indirectly dominates
+        edges, while EDS directly dominates them.
+      </li>
+      <li>
+        <strong>Dominating Set</strong>: A vertex-based variant where vertices
+        dominate neighboring vertices.
+      </li>
+    </ul>
+    <h2>Example</h2>
+    <p>Consider a graph $G$ with edges $E = {(1,2), (2,3), (3,4)}$:</p>
+    <ul>
+      <li>
+        A minimal edge dominating set: $D = {(2,3)}$, since:
+        <ul>
+          <li>Edge (1,2) is adjacent to (2,3).</li>
+          <li>Edge (3,4) is adjacent to (2,3).</li>
+        </ul>
+      </li>
+    </ul>
+    <h2>Algorithms</h2>
+    <ol>
+      <li>
+        <strong>Greedy Approach</strong>: Iteratively select edges covering the
+        most undominated edges.
+      </li>
+      <li>
+        <strong>Integer Linear Programming (ILP)</strong>: Formulate EDS as an
+        optimization problem.
+      </li>
+      <li>
+        <strong>Fixed-Parameter Tractability (FPT)</strong>: Solvable in
+        $O^*(c^k)$ time for some constant $c$.
+      </li>
+    </ol>
+    <h2>Open Problems</h2>
+    <ul>
+      <li>
+        Finding improved approximation ratios or exact algorithms for special
+        graph classes (e.g., planar graphs, bipartite graphs).
+      </li>
+      <li>Investigating parameterized complexity further.</li>
+    </ul>
+    <h2>References</h2>
+    <ul>
+      <li>
+        Garey &amp; Johnson, <em>Computers and Intractability</em> (1979).
+      </li>
+      <li>
+        G. F. Italiano et al.,
+        <em>Exact and Approximate Algorithms for Edge Dominating Set</em>.
+      </li>
+    </ul>
+    <hr />
+    <h2>Problem Statement</h2>
+    <p>Input: A Boolean Adjacency Matrix $M$.</p>
+    <p>Answer: Find a Minimum Edge Dominating Set.</p>
+    <h3>Example Instance: 5 x 5 matrix</h3>
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>c1</th>
+          <th>c2</th>
+          <th>c3</th>
+          <th>c4</th>
+          <th>c5</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>r1</strong></td>
+          <td>0</td>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><strong>r2</strong></td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td><strong>r3</strong></td>
+          <td>1</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td><strong>r4</strong></td>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td><strong>r5</strong></td>
+          <td>1</td>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The input for undirected graph is typically provided in
+      <a href="http://dimacs.rutgers.edu/Challenges">DIMACS</a> format. In this
+      way, the previous adjacency matrix is represented in a text file using the
+      following string representation:
+    </p>
+    <pre><code>p edge 5 4
+e 1 3
+e 1 5
+e 2 4
+e 3 5
+</code></pre>
+    <p>
+      This represents a 5x5 matrix in DIMACS format such that each edge $(v,w)$
+      appears exactly once in the input file and is not repeated as $(w,v)$. In
+      this format, every edge appears in the form of
+    </p>
+    <pre><code>e W V
+</code></pre>
+    <p>
+      where the fields W and V specify the endpoints of the edge while the
+      lower-case character <code>e</code> signifies that this is an edge
+      descriptor line.
+    </p>
+    <p><em>Example Solution:</em></p>
+    <p>
+      Edge Dominating Set Found <code>(3, 5), (2, 4)</code>: Edges
+      <code>(3, 5)</code>, and <code>(2, 4)</code> constitute an optimal
+      solution.
+    </p>
+    <hr />
+    <h1>Compile and Environment</h1>
+    <h2>Prerequisites</h2>
+    <ul>
+      <li>Python ≥ 3.10</li>
+    </ul>
+    <h2>Installation</h2>
+    <pre><code class="language-bash">pip install loynaz
+</code></pre>
+    <h2>Execution</h2>
+    <ol>
+      <li>
+        <p>Clone the repository:</p>
+        <pre><code class="language-bash">git clone https://github.com/frankvegadelgado/loynaz.git
+cd loynaz
+</code></pre>
+      </li>
+      <li>
+        <p>Run the script:</p>
+        <pre><code class="language-bash">edge -i ./benchmarks/testMatrix1
+</code></pre>
+        <p>
+          utilizing the <code>edge</code> command provided by Loynaz's Library
+          to execute the Boolean adjacency matrix
+          <code>loynaz\benchmarks\testMatrix1</code>. The file
+          <code>testMatrix1</code> represents the example described herein. We
+          also support <code>.xz</code>, <code>.lzma</code>, <code>.bz2</code>,
+          and <code>.bzip2</code> compressed text files.
+        </p>
+        <p><strong>Example Output:</strong></p>
+        <pre><code>testMatrix1: Edge Dominating Set Found (3, 5), (2, 4)
+</code></pre>
+        <p>
+          This indicates edges <code>(3, 5), (2, 4)</code> form a edge
+          dominating set.
+        </p>
+      </li>
+    </ol>
+    <hr />
+    <h2>Edge Dominating Set Size</h2>
+    <p>
+      Use the <code>-c</code> flag to count the edges in the edge dominating
+      set:
+    </p>
+    <pre><code class="language-bash">edge -i ./benchmarks/testMatrix2 -c
+</code></pre>
+    <p><strong>Output:</strong></p>
+    <pre><code>testMatrix2: Edge Dominating Set Size 3
+</code></pre>
+    <hr />
+    <h1>Command Options</h1>
+    <p>Display help and options:</p>
+    <pre><code class="language-bash">edge -h
+</code></pre>
+    <p><strong>Output:</strong></p>
+    <pre><code class="language-bash">usage: edge [-h] -i INPUTFILE [-a] [-b] [-c] [-v] [-l] [--version]
+
+Compute the Approximate Edge Dominating Set for undirected graph encoded in DIMACS format.
+
+options:
+  -h, --help            show this help message and exit
+  -i INPUTFILE, --inputFile INPUTFILE
+                        input file path
+  -a, --approximation   enable comparison with a polynomial-time approximation approach within a factor of at most 2
+  -b, --bruteForce      enable comparison with the exponential-time brute-force approach
+  -c, --count           calculate the size of the edge dominating set
+  -v, --verbose         anable verbose output
+  -l, --log             enable file logging
+  --version             show program's version number and exit
+</code></pre>
+    <hr />
+    <h1>Batch Execution</h1>
+    <p>
+      Batch execution allows you to solve multiple graphs within a directory
+      consecutively.
+    </p>
+    <p>
+      To view available command-line options for the
+      <code>batch_edge</code> command, use the following in your terminal or
+      command prompt:
+    </p>
+    <pre><code class="language-bash">batch_edge -h
+</code></pre>
+    <p>This will display the following help information:</p>
+    <pre><code class="language-bash">usage: batch_edge [-h] -i INPUTDIRECTORY [-a] [-b] [-c] [-v] [-l] [--version]
+
+Compute the Approximate Edge Dominating Set for all undirected graphs encoded in DIMACS format and stored in a directory.
+
+options:
+  -h, --help            show this help message and exit
+  -i INPUTDIRECTORY, --inputDirectory INPUTDIRECTORY
+                        Input directory path
+  -a, --approximation   enable comparison with a polynomial-time approximation approach within a factor of at most 2
+  -b, --bruteForce      enable comparison with the exponential-time brute-force approach
+  -c, --count           calculate the size of the edge dominating set
+  -v, --verbose         anable verbose output
+  -l, --log             enable file logging
+  --version             show program's version number and exit
+</code></pre>
+    <hr />
+    <h1>Testing Application</h1>
+    <p>
+      A command-line utility named <code>test_edge</code> is provided for
+      evaluating the Algorithm using randomly generated, large sparse matrices.
+      It supports the following options:
+    </p>
+    <pre><code class="language-bash">usage: test_edge [-h] -d DIMENSION [-n NUM_TESTS] [-s SPARSITY] [-a] [-b] [-c] [-w] [-v] [-l] [--version]
+
+The Loynaz Testing Application using randomly generated, large sparse matrices.
+
+options:
+  -h, --help            show this help message and exit
+  -d DIMENSION, --dimension DIMENSION
+                        an integer specifying the dimensions of the square matrices
+  -n NUM_TESTS, --num_tests NUM_TESTS
+                        an integer specifying the number of tests to run
+  -s SPARSITY, --sparsity SPARSITY
+                        sparsity of the matrices (0.0 for dense, close to 1.0 for very sparse)
+  -a, --approximation   enable comparison with a polynomial-time approximation approach within a factor of at most 2
+  -b, --bruteForce      enable comparison with the exponential-time brute-force approach
+  -c, --count           calculate the size of the edge dominating set
+  -w, --write           write the generated random matrix to a file in the current directory
+  -v, --verbose         anable verbose output
+  -l, --log             enable file logging
+  --version             show program's version number and exit
+</code></pre>
+    <hr />
+    <h1>Code</h1>
+    <ul>
+      <li>Python implementation by <strong>Frank Vega</strong>.</li>
+    </ul>
+    <hr />
+    <h1>License</h1>
+    <ul>
+      <li>MIT License.</li>
+    </ul>
+  </body>
+</html>
