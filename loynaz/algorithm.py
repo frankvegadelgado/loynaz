@@ -9,7 +9,7 @@ import baldor.algorithm as alg
 
 def find_edge_dominating(graph):
     """
-    Compute an approximate minimum edge dominating set set for an undirected graph by transforming it into a chordal graph.
+    Compute an approximate minimum edge dominating set set for an undirected graph.
 
     Args:
         graph (nx.Graph): A NetworkX Graph object representing the input graph.

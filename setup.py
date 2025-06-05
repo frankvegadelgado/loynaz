@@ -2,12 +2,12 @@ from pathlib import Path
 
 import setuptools
 
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 NAME = "loynaz"
 
 INSTALL_REQUIRES = [
-    "baldor>=0.1.3"
+    "baldor>=0.1.4"
 ]
 
 setuptools.setup(
